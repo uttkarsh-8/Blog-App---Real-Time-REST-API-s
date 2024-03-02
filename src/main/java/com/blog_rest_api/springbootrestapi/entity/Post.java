@@ -3,6 +3,9 @@ package com.blog_rest_api.springbootrestapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +21,9 @@ public class Post {
     private String description;
     @Column(nullable = false)
     private String content;
+
+    //mappedBy is used to map the child entity to the parent entity, cascade is used to propagate the changes to the associated entities, orphanRemoval is used to remove the child entity when it is removed from the parent entity
+    //using a set to avoid duplicate comments
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 }

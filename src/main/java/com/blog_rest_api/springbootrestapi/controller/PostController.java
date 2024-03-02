@@ -22,7 +22,7 @@ public class PostController {
         this.postService = postService;
         this.postrepository = postrepository;
     }
-    // creating a blog
+    // creating a post
     @PostMapping
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
         PostDto createdPost = postService.createPost(postDto);
