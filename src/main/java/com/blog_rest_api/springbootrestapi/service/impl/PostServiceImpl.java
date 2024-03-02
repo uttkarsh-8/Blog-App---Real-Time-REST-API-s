@@ -3,8 +3,12 @@ package com.blog_rest_api.springbootrestapi.service.impl;
 import com.blog_rest_api.springbootrestapi.entity.Post;
 import com.blog_rest_api.springbootrestapi.exception.ResourceNotFoundException;
 import com.blog_rest_api.springbootrestapi.payload.PostDto;
+import com.blog_rest_api.springbootrestapi.payload.PostResponse;
 import com.blog_rest_api.springbootrestapi.repository.Postrepository;
 import com.blog_rest_api.springbootrestapi.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,10 +36,26 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postrepository.findAll();
+    public PostResponse getAllPosts(int pageNo, int pageSize) {
+        //creating a Pageable instance for pagination argument
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        return posts.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
+        Page<Post> posts = postrepository.findAll(pageable);
+        // for getting a content in a Page we wll have to use getContent(only available when page) on the object and mamke a list of it and store it in the page
+        List<Post> content = posts.getContent();
+
+        //converting the list of posts(Pages) to DTOs
+        List<PostDto> allContent = content.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(allContent);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalPages(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+        postResponse.setTotalElements(posts.getNumberOfElements());
+
+        return postResponse;
     }
 
     @Override
@@ -51,7 +71,7 @@ public class PostServiceImpl implements PostService {
        //getting post by id
         Post post = postrepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Post", "id", id));
 
-        // convertigng the user updated DTO object to Entity
+        // converting the user updated DTO object to Entity
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
         post.setDescription(postDto.getDescription());
@@ -61,6 +81,15 @@ public class PostServiceImpl implements PostService {
 
         // converting it back to DTO and returning it back to the user
         return mapToDto(updatedPost);
+    }
+
+    @Override
+    public String deletePostById(long id) {
+
+        Post post = postrepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        postrepository.delete(post);
+
+        return "Post deleted successfully";
     }
 
 

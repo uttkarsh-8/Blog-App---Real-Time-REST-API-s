@@ -1,6 +1,7 @@
 package com.blog_rest_api.springbootrestapi.controller;
 
 import com.blog_rest_api.springbootrestapi.payload.PostDto;
+import com.blog_rest_api.springbootrestapi.payload.PostResponse;
 import com.blog_rest_api.springbootrestapi.repository.Postrepository;
 import com.blog_rest_api.springbootrestapi.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,11 @@ public class PostController {
     }
     // return all posts
     @GetMapping
-    public List<PostDto> getAllPosts(){
-       return postService.getAllPosts();
+    public PostResponse getAllPosts(
+            @RequestParam(value = "pageNo",defaultValue = "0", required = false)int pageNo,
+            @RequestParam(value = "pageSize",defaultValue = "10", required = false)int pageSize){
+
+        return postService.getAllPosts(pageNo, pageSize);
     }
 
     //getting post by ID
@@ -40,9 +44,18 @@ public class PostController {
         return postService.getPostById(id);
     }
 
+    // Updating a post by id
     @PutMapping("/{id}")
     public PostDto updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id")long id){
 
         return postService.updatePost(postDto, id);
+    }
+
+    //deleting a post by id
+    @DeleteMapping("/{id}")
+    public String deletePost(@PathVariable(name = "id") long id){
+        postService.deletePostById(id);
+
+        return "Post deleted successfully";
     }
 }
