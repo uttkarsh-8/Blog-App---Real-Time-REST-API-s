@@ -6,9 +6,11 @@ import com.blog_rest_api.springbootrestapi.payload.PostDto;
 import com.blog_rest_api.springbootrestapi.payload.PostResponse;
 import com.blog_rest_api.springbootrestapi.repository.Postrepository;
 import com.blog_rest_api.springbootrestapi.service.PostService;
+import org.hibernate.query.SortDirection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,9 +38,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getAllPosts(int pageNo, int pageSize) {
+    public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy,  String sortDir) {
+        //if "sort" is ascending order it will get ascending if descending it will return descending order
+
+        Sort sort = sortDir.equalsIgnoreCase(SortDirection.ASCENDING.name())?Sort.by(sortBy).ascending(): Sort.by(sortBy).descending();
+
         //creating a Pageable instance for pagination argument
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Post> posts = postrepository.findAll(pageable);
         // for getting a content in a Page we wll have to use getContent(only available when page) on the object and mamke a list of it and store it in the page
