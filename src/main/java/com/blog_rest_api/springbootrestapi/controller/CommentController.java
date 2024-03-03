@@ -5,7 +5,9 @@ import com.blog_rest_api.springbootrestapi.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -20,12 +22,22 @@ public class CommentController {
 
     //creating a comment on a post
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentDto> createComment(@PathVariable(name = "postId")long postId, @RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> createComment(
+            @PathVariable(name = "postId") long postId,
+            @RequestBody CommentDto commentDto) {
 
-        CommentDto comment = commentService.createComment(postId, commentDto);
+        CommentDto createdComment = commentService.createComment(postId, commentDto);
 
-        return new ResponseEntity<>(comment, HttpStatus.CREATED);
+        // Construct the URI for the newly created comment
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}") // Append a placeholder for the comment ID
+                .buildAndExpand(createdComment.getId()) // Replace the placeholder with the actual comment ID
+                .toUri(); // Build the URI
+
+        // Return the response entity with status 201 Created, including the location header and the created comment in the body
+        return ResponseEntity.created(location).body(createdComment);
     }
+
 
     //getting all comments of a post
     @GetMapping("/posts/{postId}/comments")
@@ -47,9 +59,10 @@ public class CommentController {
     }
 
     @PutMapping("/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "postId")long postId,
-                                                    @PathVariable(name = "commentId")long commentId,
-                                                    @RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> updateComment(
+            @PathVariable(name = "postId")long postId,
+            @PathVariable(name = "commentId")long commentId,
+            @RequestBody CommentDto commentDto){
 
         CommentDto updatedCommentDto = commentService.updateComment(postId, commentId, commentDto);
 
@@ -57,7 +70,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<?> deletePostById(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId){
+    public ResponseEntity<?> deletePostById(
+            @PathVariable(name = "postId") long postId, 
+            @PathVariable(name = "commentId") long commentId){
 
         commentService.deleteCommentById(postId,commentId);
 

@@ -14,6 +14,7 @@ public class ResourceNotFoundException extends RuntimeException{
 
     public ResourceNotFoundException(String resourceName, String fieldName, long fieldValue) {
 
+        // To Pass a Custom Message to the Superclass Constructor
         super(String.format("%s not found with %s : '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
         this.fieldName = fieldName;

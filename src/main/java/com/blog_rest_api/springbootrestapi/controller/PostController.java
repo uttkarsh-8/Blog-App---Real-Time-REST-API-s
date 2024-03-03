@@ -8,7 +8,9 @@ import com.blog_rest_api.springbootrestapi.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -23,12 +25,20 @@ public class PostController {
         this.postrepository = postrepository;
     }
     // creating a post
-    @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    @PostMapping("/posts")
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
         PostDto createdPost = postService.createPost(postDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
+        // Construct the URI of the newly created resource
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest() // Base path of the current request
+                .path("/{id}") // Append path variable 'id'
+                .buildAndExpand(createdPost.getId()) // Replace 'id' with actual ID of created post
+                .toUri(); // Convert to URI
+
+        // Return response entity with status 201 Created, include the location header and the created post as the body
+        return ResponseEntity.created(location).body(createdPost);
     }
+
     // return all posts
     @GetMapping
     public PostResponse getAllPosts(
