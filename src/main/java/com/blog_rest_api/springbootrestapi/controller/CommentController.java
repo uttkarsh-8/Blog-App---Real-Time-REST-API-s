@@ -29,24 +29,38 @@ public class CommentController {
 
     //getting all comments of a post
     @GetMapping("/posts/{postId}/comments")
-    public List<CommentDto> getCommentsByPostId(@PathVariable(name = "postId")long postId){
+    public ResponseEntity<List<CommentDto>> getCommentsByPostId(@PathVariable(name = "postId")long postId){
 
-        return commentService.getCommentsByPostId(postId);
+        List<CommentDto> comments = commentService.getCommentsByPostId(postId);
+
+        return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/posts/{postId}/comments/{commentId}")
-    public CommentDto getCommentById(
+    public ResponseEntity<CommentDto> getCommentById(
             @PathVariable(name = "postId")long postId,
             @PathVariable(name = "commentId")long commentId){
 
-        return commentService.getCommentById(postId,commentId);
+        CommentDto comment = commentService.getCommentById(postId, commentId);
+        
+        return ResponseEntity.ok(comment);
     }
 
     @PutMapping("/posts/{postId}/comments/{commentId}")
-    public CommentDto updateComment(@PathVariable(name = "postId")long postId,
-                                    @PathVariable(name = "commentId")long commentId,
-                                    @RequestBody CommentDto commentDto){
+    public ResponseEntity<CommentDto> updateComment(@PathVariable(name = "postId")long postId,
+                                                    @PathVariable(name = "commentId")long commentId,
+                                                    @RequestBody CommentDto commentDto){
 
-        return commentService.updateComment(postId, commentId, commentDto);
+        CommentDto updatedCommentDto = commentService.updateComment(postId, commentId, commentDto);
+
+        return ResponseEntity.ok(updatedCommentDto);
+    }
+
+    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<?> deletePostById(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId){
+
+        commentService.deleteCommentById(postId,commentId);
+
+        return ResponseEntity.noContent().build();
     }
 }

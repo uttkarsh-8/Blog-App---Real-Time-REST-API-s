@@ -92,6 +92,19 @@ public class CommentServiceImpl implements CommentService {
         return mapToDto(savedComment);
     }
 
+    @Override
+    public void deleteCommentById(long postId, long commentId) {
+        //finding the comment, if it does not exist then returning an exception
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentId));
+
+        //matching the post id to see whether the post exits with that id or not, else returning exception
+        if (comment.getPost().getId() != postId){
+            throw new ResourceNotFoundException("Post","id",postId);
+        }
+
+        commentRepository.deleteById(commentId);
+    }
+
     private Comment mapToEntity(CommentDto commentDto) {
 
         Comment comment = new Comment();
