@@ -5,6 +5,7 @@ import com.blog_rest_api.springbootrestapi.payload.PostResponse;
 import com.blog_rest_api.springbootrestapi.repository.Postrepository;
 import com.blog_rest_api.springbootrestapi.service.PostService;
 import com.blog_rest_api.springbootrestapi.utils.AppConstants;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,8 @@ public class PostController {
         this.postrepository = postrepository;
     }
     // creating a post
-    @PostMapping("/posts")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+    @PostMapping
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         PostDto createdPost = postService.createPost(postDto);
 
         // Construct the URI of the newly created resource
@@ -60,7 +61,7 @@ public class PostController {
 
     // Updating a post by id
     @PutMapping("/{id}")
-    public PostDto updatePost(@RequestBody PostDto postDto, @PathVariable(name = "id")long id){
+    public PostDto updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id")long id){
 
         return postService.updatePost(postDto, id);
     }
