@@ -8,6 +8,7 @@ import com.blog_rest_api.springbootrestapi.utils.AppConstants;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,13 +20,15 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final Postrepository postrepository;
 
-    public PostController(PostService postService, Postrepository postrepository) {
+    //commenting line 24, if code breaks then uncomment it LOL
+//    private final Postrepository postrepository;
+
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.postrepository = postrepository;
     }
     // creating a post
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         PostDto createdPost = postService.createPost(postDto);
@@ -60,6 +63,7 @@ public class PostController {
     }
 
     // Updating a post by id
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public PostDto updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id")long id){
 
@@ -67,6 +71,7 @@ public class PostController {
     }
 
     //deleting a post by id
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deletePost(@PathVariable(name = "id") long id){
         postService.deletePostById(id);
