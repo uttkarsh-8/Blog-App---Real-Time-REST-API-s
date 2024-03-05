@@ -64,4 +64,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    // exception for invalid JWT token
+    @ExceptionHandler(InvalidJwtAuthenticationException.class) // Used for handling invalid JWT token exceptions
+    public ResponseEntity<ErrorDetails> handleInvalidJwtAuthenticationException(InvalidJwtAuthenticationException ex, WebRequest request) {
+        // Create an instance of ErrorDetails, providing the current date, exception message, and request description
+        ErrorDetails errorDetails = new ErrorDetails(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        // Return a ResponseEntity with the ErrorDetails instance as the body and set the HTTP status to BAD_REQUEST
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
 }

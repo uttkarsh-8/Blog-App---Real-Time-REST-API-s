@@ -6,7 +6,9 @@ import com.blog_rest_api.springbootrestapi.payload.LoginDto;
 import com.blog_rest_api.springbootrestapi.payload.RegisterDto;
 import com.blog_rest_api.springbootrestapi.repository.RoleRepositoy;
 import com.blog_rest_api.springbootrestapi.repository.UserRepository;
+import com.blog_rest_api.springbootrestapi.security.JwtTokenProvider;
 import com.blog_rest_api.springbootrestapi.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,15 +28,16 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepositoy roleRepositoy;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, RoleRepositoy roleRepositoy, UserRepository userRepository) {
+    public AuthServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, RoleRepositoy roleRepositoy, UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.roleRepositoy = roleRepositoy;
         this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    // This method takes a LoginDto object, which contains login credentials, and returns a string indicating the login status.
     @Override
     public String login(LoginDto loginDto) {
 
@@ -47,8 +50,10 @@ public class AuthServiceImpl implements AuthService {
         // This effectively signs the user in, associating the authentication with the current security context (e.g., the current session).
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        String token = jwtTokenProvider.generateToken(authentication);
+
         // Return a success message indicating the user has been logged in successfully.
-        return "User is logged in successfully";
+        return token;
     }
 
     @Override
