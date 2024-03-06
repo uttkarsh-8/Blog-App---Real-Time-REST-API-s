@@ -48,14 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     null, // credentials is passed as nulls as the token has the credentials
                     userDetails.getAuthorities()); // the get authorities goves out the roles to the user
 
+            //adds additional details to the Authentication object, specifically web-related details such as the IP address and session ID from the HttpServletRequest. This can be useful for audit trails and more nuanced security checks.
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         }
-
         filterChain.doFilter(request,response);
-
     }
 
     // this HttpServletRequest contains a header, from that header we will get that jwt token

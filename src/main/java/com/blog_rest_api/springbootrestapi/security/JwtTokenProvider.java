@@ -80,6 +80,5 @@ public class JwtTokenProvider {
             e.printStackTrace();
             throw new InternalError("Something is wrong");
         }
-
     }
 }
