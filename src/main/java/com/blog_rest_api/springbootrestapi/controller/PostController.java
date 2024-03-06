@@ -2,11 +2,9 @@ package com.blog_rest_api.springbootrestapi.controller;
 
 import com.blog_rest_api.springbootrestapi.payload.PostDto;
 import com.blog_rest_api.springbootrestapi.payload.PostResponse;
-import com.blog_rest_api.springbootrestapi.repository.Postrepository;
 import com.blog_rest_api.springbootrestapi.service.PostService;
 import com.blog_rest_api.springbootrestapi.utils.AppConstants;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
