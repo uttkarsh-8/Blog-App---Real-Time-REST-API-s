@@ -1,6 +1,7 @@
 package com.blog_rest_api.springbootrestapi.controller;
 
 import com.blog_rest_api.springbootrestapi.payload.PostDto;
+import com.blog_rest_api.springbootrestapi.payload.PostDtoV2;
 import com.blog_rest_api.springbootrestapi.payload.PostResponse;
 import com.blog_rest_api.springbootrestapi.service.PostService;
 import com.blog_rest_api.springbootrestapi.utils.AppConstants;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -89,10 +91,32 @@ public class PostController {
             responseCode = "200",
             description = "Http Status 200 SUCCESS"
     )
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", headers = "X-API-VERSION=1")
     public PostDto getPostById(@PathVariable(name = "id")long id){
 
         return postService.getPostById(id);
+    }
+
+    // getting post by Id V2 Version which includes tags
+    @GetMapping(value = "/{id}", headers = "X-API-VERSION=2")
+    public PostDtoV2 getPostByIdV2(@PathVariable(name = "id")long id){
+
+        PostDto postDto = postService.getPostById(id);
+        PostDtoV2 postDtoV2 = new PostDtoV2();
+
+        postDtoV2.setId(postDto.getId());
+        postDtoV2.setTitle(postDto.getTitle());
+        postDtoV2.setDescription(postDto.getDescription());
+        postDtoV2.setContent(postDto.getContent());
+
+        List<String> tags = new ArrayList<>();
+        tags.add("JAVA");
+        tags.add("SPRING BOOT");
+        tags.add("AWS");
+        tags.add("DOCKER");
+
+        postDtoV2.setTags(tags);
+        return postDtoV2;
     }
 
     // Updating a post by id
