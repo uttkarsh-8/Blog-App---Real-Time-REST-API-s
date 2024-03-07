@@ -72,14 +72,16 @@ public class PostController {
             description = "Http Status 200 SUCCESS"
     )
     @GetMapping
-    public PostResponse getAllPosts(
+    public ResponseEntity<PostResponse> getAllPosts(
 
-            @RequestParam(value = "pageNo",defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false)int pageNo,
-            @RequestParam(value = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false)int pageSize,
-            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false)String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false)String sortDir){
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir){
 
-        return postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
+        PostResponse postResponse = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
+
+        return ResponseEntity.ok(postResponse);
     }
 
     //getting post by ID
@@ -92,14 +94,24 @@ public class PostController {
             description = "Http Status 200 SUCCESS"
     )
     @GetMapping(value = "/{id}", headers = "X-API-VERSION=1")
-    public PostDto getPostById(@PathVariable(name = "id")long id){
+    public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id")long id){
 
-        return postService.getPostById(id);
+        PostDto postById = postService.getPostById(id);
+
+        return ResponseEntity.ok(postById);
     }
 
     // getting post by Id V2 Version which includes tags
+    @Operation(
+            summary = "Get V2 Post By Id REST API",
+            description = "Used to get a specific post by id from the database with hardcoded tags"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Http Status 200 SUCCESS"
+    )
     @GetMapping(value = "/{id}", headers = "X-API-VERSION=2")
-    public PostDtoV2 getPostByIdV2(@PathVariable(name = "id")long id){
+    public ResponseEntity<PostDtoV2> getPostByIdV2(@PathVariable(name = "id")long id){
 
         PostDto postDto = postService.getPostById(id);
         PostDtoV2 postDtoV2 = new PostDtoV2();
@@ -116,7 +128,7 @@ public class PostController {
         tags.add("DOCKER");
 
         postDtoV2.setTags(tags);
-        return postDtoV2;
+        return ResponseEntity.ok(postDtoV2);
     }
 
     // Updating a post by id
@@ -133,9 +145,11 @@ public class PostController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public PostDto updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id")long id){
+    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id")long id){
 
-        return postService.updatePost(postDto, id);
+        PostDto updatedPost = postService.updatePost(postDto, id);
+
+        return ResponseEntity.ok(updatedPost);
     }
 
     //deleting a post by id
@@ -152,10 +166,10 @@ public class PostController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable(name = "id") long id){
+    public ResponseEntity<String> deletePost(@PathVariable(name = "id") long id){
         postService.deletePostById(id);
 
-        return "Post deleted successfully";
+        return ResponseEntity.ok("Post deleted successfully");
     }
 
     // get posts by category REST API
